@@ -8,9 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -19,9 +17,9 @@ public class PersonDAO {
     private final RowMapper<Person> personRowMapper;
 
     @Autowired
-    public PersonDAO(JdbcTemplate jdbcTemplate) {
+    public PersonDAO(JdbcTemplate jdbcTemplate, RowMapper<Person> personRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.personRowMapper = new BeanPropertyRowMapper<>(Person.class);
+        this.personRowMapper = personRowMapper;
     }
 
     public Collection<Person> get() {

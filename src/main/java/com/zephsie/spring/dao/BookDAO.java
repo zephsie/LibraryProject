@@ -3,7 +3,6 @@ package com.zephsie.spring.dao;
 import com.zephsie.spring.models.Book;
 import com.zephsie.spring.models.Person;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -17,10 +16,13 @@ public class BookDAO {
 
     private final RowMapper<Book> bookRowMapper;
 
+    private final RowMapper<Person> personRowMapper;
+
     @Autowired
-    public BookDAO(JdbcTemplate jdbcTemplate) {
+    public BookDAO(JdbcTemplate jdbcTemplate, RowMapper<Book> bookRowMapper, RowMapper<Person> personRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.bookRowMapper = new BeanPropertyRowMapper<>(Book.class);
+        this.bookRowMapper = bookRowMapper;
+        this.personRowMapper = personRowMapper;
     }
 
     public Collection<Book> get() {
@@ -58,7 +60,7 @@ public class BookDAO {
 
     public Optional<Person> getOwner(Long id) {
         return jdbcTemplate.query("SELECT id, full_name, year_of_birth FROM structure.person WHERE id = (SELECT person_id FROM structure.book WHERE id = ?)",
-                        new BeanPropertyRowMapper<>(Person.class),
+                        personRowMapper,
                         id)
                 .stream()
                 .findAny();
